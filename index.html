@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flint</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #000;
+      overflow-x: hidden;
+    }
+
+    .hero-green {
+      color: #1D9E75;
+    }
+
+    .hero-desc-section {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      margin-top: 28px;
+      max-width: 600px;
+      padding: 0 20px;
+    }
+
+    .hero-desc-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 16px;
+      font-weight: 400;
+      color: #777;
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-desc-text span {
+      color: #1D9E75;
+      font-weight: 700;
+    }
+
+    .hero-page {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #particles-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .hero-center {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-family: 'Unica One', cursive;
+      font-size: 120px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 4px;
+      margin: 0;
+      line-height: 1;
+      text-shadow: 0 0 80px rgba(29, 158, 117, 0.15);
+    }
+
+    .hero-sub {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: #555;
+      letter-spacing: 4px;
+      margin-top: 12px;
+      text-transform: lowercase;
+    }
+
+    .hero-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 90px;
+      background: linear-gradient(to top, #000 60%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 50;
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 44px;
+        letter-spacing: 8px;
+      }
+
+      .hero-sub {
+        font-size: 11px;
+        letter-spacing: 2px;
+      }
+
+      .hero-bottom-bar {
+        height: auto;
+        gap: 8px;
+        padding: 16px 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hero-bottom-bar .hero-btn {
+        padding: 10px 16px;
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 34px;
+        letter-spacing: 6px;
+      }
+
+      .hero-sub {
+        font-size: 10px;
+      }
+
+      .hero-bottom-bar {
+        flex-direction: column;
+        align-items: center;
+        padding: 12px;
+        gap: 8px;
+      }
+
+      .hero-bottom-bar .hero-btn {
+        width: 200px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hero-page">
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="hero-center">
+      <h1 class="hero-title">Flint</h1>
+      <p class="hero-sub">by Aarav Gandhi</p>
+    </div>
+
+    <div class="hero-desc-section">
+      <p class="hero-desc-text">
+        Your personal <span>financial navigator</span>. Explore investment allocations by age,
+        compare strategies of legendary investors, track market trends, and visualize
+        how your portfolio can grow to match real estate goals in India.
+      </p>
+    </div>
+
+    <div class="hero-bottom-bar">
+      <a href="investment_allocation_charts.html" class="hero-btn" style="font-family: 'Unica One', cursive; font-size: 20px; letter-spacing: 1px;">
+        Get Started
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let w, h, particles, mouse;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+
+    mouse = { x: w / 2, y: h / 2 };
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        this.size = Math.random() * 1.5 + 0.3;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.1;
+        // Green-tinted or white
+        const isGreen = Math.random() > 0.7;
+        this.color = isGreen
+          ? `rgba(29, 158, 117, ${this.opacity})`
+          : `rgba(255, 255, 255, ${this.opacity * 0.6})`;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Subtle mouse repulsion
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const force = (120 - dist) / 120;
+          this.x += (dx / dist) * force * 0.8;
+          this.y += (dy / dist) * force * 0.8;
+        }
+
+        // Wrap around edges
+        if (this.x < -10) this.x = w + 10;
+        if (this.x > w + 10) this.x = -10;
+        if (this.y < -10) this.y = h + 10;
+        if (this.y > h + 10) this.y = -10;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      const count = Math.min(Math.floor((w * h) / 5000), 300);
+      particles = [];
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function drawLines() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            const opacity = (1 - dist / 100) * 0.12;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(29, 158, 117, ${opacity})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, w, h);
+
+      for (const p of particles) {
+        p.update();
+        p.draw();
+      }
+      drawLines();
+
+      requestAnimationFrame(animate);
+    }
+
+    resize();
+    initParticles();
+    animate();
+
+    // Re-init particles on resize
+    window.addEventListener('resize', () => {
+      resize();
+      initParticles();
+    });
+  </script>
+</body>
+
+</html>

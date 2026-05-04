@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flint - Explorer</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="topnav">
+    <a href="index.html" class="topnav-logo"><i class="fa-solid fa-leaf"></i> <span style="color:#1D9E75">Flint</span></a>
+    <div class="topnav-links">
+      <a href="investment_allocation_charts.html"><i class="fa-solid fa-chart-pie"></i> Allocation</a>
+      <a href="investment_types_explorer.html" class="active"><i class="fa-solid fa-compass"></i> Explorer</a>
+      <a href="market_trends.html"><i class="fa-solid fa-chart-line"></i> Trends</a>
+      <a href="india_investment_house_timeline.html"><i class="fa-solid fa-house-chimney"></i> Timeline</a>
+    </div>
+    <button class="hamburger" onclick="document.getElementById('mobile-nav').classList.add('open')"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+  <div class="mobile-nav-overlay" id="mobile-nav">
+    <button class="mobile-nav-close" onclick="document.getElementById('mobile-nav').classList.remove('open')"><i class="fa-solid fa-xmark"></i></button>
+    <a href="investment_allocation_charts.html"><i class="fa-solid fa-chart-pie"></i> Allocation</a>
+    <a href="investment_types_explorer.html" class="active"><i class="fa-solid fa-compass"></i> Explorer</a>
+    <a href="market_trends.html"><i class="fa-solid fa-chart-line"></i> Trends</a>
+    <a href="india_investment_house_timeline.html"><i class="fa-solid fa-house-chimney"></i> Timeline</a>
+  </div>
+  <div class="app-container">
+    <main class="main-content">
+      <div class="container">
+        <div class="dashboard-section">
+      <h2 class="section-head">Investment Types Explorer</h2>
+<style>
+  .inv-root{padding:12px 0;font-family:var(--font-sans)}
+  .inv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .inv-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:12px;font-family:var(--font-sans);cursor:pointer;transition:all .15s}
+  .inv-tab.active{border-color:transparent;color:#fff}
+  .inv-card{border:1px solid var(--color-border-tertiary);border-radius:12px;padding:18px 20px;background:var(--color-background-secondary)}
+  .inv-card-title{font-size:16px;font-weight:700;color:var(--color-text-primary);margin-bottom:4px}
+  .inv-card-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:14px}
+  .inv-metrics{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .inv-pill{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:700;font-family:var(--font-sans)}
+  .subtypes-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+  .subtype-list{display:flex;flex-direction:column;gap:8px}
+  .subtype-row{display:flex;align-items:baseline;gap:10px}
+  .subtype-name{font-size:12px;font-weight:700;color:var(--color-text-primary);min-width:160px}
+  .subtype-note{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+  .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .pros,.cons{background:var(--color-background-primary);border-radius:8px;padding:10px 12px}
+  .pros-title{font-size:11px;font-weight:700;color:#1D9E75;margin-bottom:6px}
+  .cons-title{font-size:11px;font-weight:700;color:#D85A30;margin-bottom:6px}
+  .pros ul,.cons ul{margin:0;padding-left:14px;font-size:12px;color:var(--color-text-secondary);line-height:1.7}
+  @media(max-width:768px){.pros-cons{grid-template-columns:1fr}.subtype-row{flex-direction:column;gap:2px}.subtype-name{min-width:auto}}
+</style>
+<div class="inv-root">
+  <div class="inv-tabs" id="tabs"></div>
+  <div class="inv-card" id="card"></div>
+</div>
+<script>
+const categories=[
+  {name:"Equities",color:"#534AB7",bg:"#EEEDFE",desc:"Ownership shares in public or private companies. You profit from price appreciation and dividends. The backbone of most long-term wealth-building portfolios.",risk:"High",return:"High",liquidity:"High",subtypes:[{name:"Individual stocks",note:"Direct ownership in a single company. High upside, concentrated risk."},{name:"Growth stocks",note:"Companies reinvesting profits for rapid expansion. High volatility, no dividends."},{name:"Value stocks",note:"Undervalued companies relative to fundamentals. Lower risk profile."},{name:"Dividend stocks",note:"Companies returning regular cash to shareholders. Income + modest growth."},{name:"Small-cap stocks",note:"Smaller companies with higher growth potential and higher risk."},{name:"International / EM",note:"Foreign developed or emerging-market companies. Currency and political risk added."}],pros:["Highest long-run return potential","Dividends provide passive income","Partial ownership in real businesses","Highly liquid — sell instantly"],cons:["High volatility — can drop 50%+","Requires research and monitoring","Emotional discipline needed","Company can go bankrupt"]},
+  {name:"Fixed income",color:"#0F6E56",bg:"#E1F5EE",desc:"Debt instruments where you lend money and receive interest payments. Lower risk than equities, widely used for income and capital preservation.",risk:"Low–Med",return:"Low–Med",liquidity:"Med",subtypes:[{name:"Government bonds",note:"Issued by national governments (e.g. US Treasuries). Near risk-free."},{name:"Municipal bonds",note:"Issued by local governments. Often tax-advantaged."},{name:"Corporate bonds (IG)",note:"Investment-grade company debt. Moderate yield, low default risk."},{name:"High-yield bonds",note:"\"Junk\" bonds from lower-rated companies. Higher return, higher default risk."},{name:"Bond ETFs / funds",note:"Pooled bond exposure. Easy diversification, some interest rate sensitivity."},{name:"Inflation-linked (TIPS)",note:"Principal adjusts with inflation. Protects purchasing power."}],pros:["Predictable income stream","Lower volatility than equities","Capital preservation","Portfolio diversifier"],cons:["Returns eroded by inflation","Interest rate risk — bond prices fall when rates rise","Corporate bonds can default","Lower upside than stocks"]},
+  {name:"Cash equivalents",color:"#185FA5",bg:"#E6F1FB",desc:"Very short-term, highly liquid instruments. Capital preservation is the primary goal. Returns are modest but nearly risk-free.",risk:"Very low",return:"Very low",liquidity:"Very high",subtypes:[{name:"Savings accounts",note:"Bank-held deposits. FDIC insured up to $250k."},{name:"Money market funds",note:"Invests in short-term debt. Stable $1 NAV, higher yield than savings."},{name:"Certificates of deposit",note:"Fixed-term deposits. Higher rate for locking up money."},{name:"Treasury bills",note:"Short-term government debt (< 1 yr). Extremely safe, liquid."}],pros:["No market risk","Instant or near-instant liquidity","Government insured (bank accounts)","Mental clarity — you know exactly what you have"],cons:["Returns often below inflation","Opportunity cost vs investing","Not a wealth-building tool","CDs penalize early withdrawal"]},
+  {name:"Real assets",color:"#854F0B",bg:"#FAEEDA",desc:"Tangible physical assets — land, buildings, raw materials. Provide inflation protection and portfolio diversification.",risk:"Med–High",return:"Med–High",liquidity:"Low",subtypes:[{name:"Direct real estate",note:"Owning physical property. Rental income + appreciation, but illiquid."},{name:"REITs",note:"Real Estate Investment Trusts — trade like stocks, own portfolios of property."},{name:"Gold",note:"Store of value, inflation hedge. No yield."},{name:"Commodities (broad)",note:"Oil, agricultural goods, metals. Cyclical, volatile."},{name:"Infrastructure",note:"Toll roads, pipelines, utilities. Stable cash flows, long assets."},{name:"Farmland / timberland",note:"Income-producing land. Very illiquid but inflation-resistant."}],pros:["Tangible, inflation-resistant","Rental income from real estate","Low correlation with stocks/bonds","Scarcity value for land"],cons:["Highly illiquid (except REITs)","High transaction costs","Active management often required","Commodity prices very volatile"]},
+  {name:"Funds",color:"#3B6D11",bg:"#EAF3DE",desc:"Pooled investment vehicles that spread money across many assets. The most accessible way for individuals to get diversified, professional-quality exposure.",risk:"Varies",return:"Varies",liquidity:"High",subtypes:[{name:"Index funds",note:"Track a market index (e.g. S&P 500). Low cost, beats most active managers."},{name:"ETFs",note:"Trade on exchanges like stocks. Ultra-low fees, flexible."},{name:"Active mutual funds",note:"Managed by professionals. Higher fees, rarely beat the index long-term."},{name:"Target-date funds",note:"Automatically shift from stocks to bonds as you near retirement."},{name:"Sector / thematic ETFs",note:"Focus on one industry (tech, clean energy). Higher concentration risk."},{name:"International funds",note:"Exposure to foreign markets. Currency risk, good diversifier."}],pros:["Instant diversification","Low-cost index options","Professionally managed","Very liquid (ETFs)"],cons:["Active funds often underperform","Fees compound over decades","No control over holdings","Some funds have minimum investments"]},
+  {name:"Alternatives",color:"#993C1D",bg:"#FAECE7",desc:"Non-traditional assets outside stocks, bonds, and cash. Often restricted to institutional or high-net-worth investors. Can provide uncorrelated returns.",risk:"Very high",return:"High (potential)",liquidity:"Very low",subtypes:[{name:"Private equity",note:"Invest in private companies or buyouts. Long lock-up, high minimum."},{name:"Venture capital",note:"Early-stage startups. Most fail; home runs are rare and large."},{name:"Hedge funds",note:"Use leverage, short-selling, derivatives. Accredited investors only."},{name:"Cryptocurrency",note:"Decentralized digital assets. Extreme volatility, 24/7 market."},{name:"Collectibles",note:"Art, wine, watches, cards. Illiquid, taste-dependent, no yield."},{name:"Peer-to-peer lending",note:"Lend directly to individuals. Higher yield, real default risk."}],pros:["Potential for outsized returns","Low correlation with public markets","Access to illiquidity premium","Diversification at portfolio level"],cons:["Highly illiquid","Opaque pricing and valuation","High fees and minimums","Less regulated and less understood"]},
+  {name:"Derivatives",color:"#A32D2D",bg:"#FCEBEB",desc:"Contracts whose value is derived from an underlying asset. Primarily used for hedging risk or speculation. Complex and powerful — losses can exceed initial investment.",risk:"Very high",return:"Very high (potential)",liquidity:"Varies",subtypes:[{name:"Call options",note:"Right to buy an asset at a set price. Limited downside, leveraged upside."},{name:"Put options",note:"Right to sell. Used for hedging or bearish speculation."},{name:"Futures contracts",note:"Obligation to buy/sell at a future date. Common in commodities."},{name:"Forex (currencies)",note:"Trade currency pairs. Huge global market, highly leveraged."},{name:"Structured products",note:"Bank-created instruments linking bonds + derivatives. Complex, often opaque."}],pros:["Leverage amplifies gains","Hedge existing portfolio risk","Options define max loss in advance","Access to otherwise hard-to-trade assets"],cons:["Can lose entire investment fast","Complex and hard to price","Not suitable for beginners","Options expire worthless often"]},
+];
+const riskColor={"Very low":"#1D9E75","Low–Med":"#3B8BD4","Med":"#BA7517","Med–High":"#D85A30","High":"#D85A30","Very high":"#E24B4A","Varies":"#888780"};
+function render(i){const c=categories[i];document.querySelectorAll('.inv-tab').forEach((t,j)=>t.classList.toggle('active',j===i));document.getElementById('card').innerHTML=`<div class="inv-card-title">${c.name}</div><div class="inv-card-desc">${c.desc}</div><div class="inv-metrics"><span class="inv-pill" style="background:${riskColor[c.risk]}22;color:${riskColor[c.risk]}">Risk: ${c.risk}</span><span class="inv-pill" style="background:#53534422;color:var(--color-text-secondary)">Return: ${c.return}</span><span class="inv-pill" style="background:#18608522;color:var(--color-text-secondary)">Liquidity: ${c.liquidity}</span></div><div class="subtypes-label">Types within this category</div><div class="subtype-list">${c.subtypes.map(s=>`<div class="subtype-row"><span class="subtype-name">${s.name}</span><span class="subtype-note">${s.note}</span></div>`).join('')}</div><div class="pros-cons"><div class="pros"><div class="pros-title">Pros</div><ul>${c.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div><div class="cons"><div class="cons-title">Cons</div><ul>${c.cons.map(p=>`<li>${p}</li>`).join('')}</ul></div></div>`;}
+const tabs=document.getElementById('tabs');categories.forEach((c,i)=>{const btn=document.createElement('button');btn.className='inv-tab';btn.textContent=c.name;btn.style.setProperty('--ac',c.color);btn.onclick=()=>render(i);btn.addEventListener('mouseenter',()=>{if(!btn.classList.contains('active'))btn.style.borderColor=c.color;});btn.addEventListener('mouseleave',()=>{if(!btn.classList.contains('active'))btn.style.borderColor='';});tabs.appendChild(btn);});
+const origRender=render;window.render=(i)=>{origRender(i);document.querySelectorAll('.inv-tab').forEach((t,j)=>{if(j===i){t.style.background=categories[i].color;t.style.borderColor=categories[i].color;}else{t.style.background='';t.style.borderColor='';}});};
+render(0);
+</script>
+    </div>
+    </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

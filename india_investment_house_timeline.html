@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flint - Investment House Timeline</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .wrap{padding:16px 0;font-family:var(--font-sans)}
+    .controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;align-items:center}
+    .ctrl-group{display:flex;flex-direction:column;gap:4px}
+    .ctrl-label{font-size:12px;color:var(--color-text-secondary)}
+    .tl-select{font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);font-family:var(--font-sans);cursor:pointer;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+    .tl-select:focus{border-color:var(--color-accent)}
+    .house-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+    .house-card{background:var(--color-background-secondary);border:1px solid var(--color-border-secondary);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .25s cubic-bezier(0.16,1,0.3,1)}
+    .house-card:hover{border-color:var(--color-accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(29,158,117,0.1)}
+    .house-card.active{border:1.5px solid var(--color-accent);background:rgba(29,158,117,0.05)}
+    .hc-label{font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+    .hc-price{font-size:15px;font-weight:700;color:var(--color-text-primary)}
+    .hc-cross{font-size:11px;margin-top:8px;font-weight:500}
+    .chart-area{position:relative;width:100%;height:360px;margin-bottom:20px}
+    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+    .mc{background:var(--color-background-secondary);border:1px solid var(--color-border-secondary);border-radius:10px;padding:14px 16px;transition:transform .3s cubic-bezier(0.16,1,0.3,1)}
+    .mc:hover{transform:translateY(-3px)}
+    .mc-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+    .mc-val{font-size:20px;font-weight:700;color:var(--color-text-primary)}
+    .mc-sub{font-size:11px;color:var(--color-text-secondary);margin-top:4px}
+    .legend-row{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px;font-size:12px;color:var(--color-text-secondary)}
+    .leg-item{display:flex;align-items:center;gap:6px}
+    .leg-sq{width:14px;height:3px;border-radius:2px}
+    .timeline-section{margin-top:24px}
+    .tl-title{font-size:13px;font-weight:700;color:var(--color-text-tertiary);margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em}
+    .tl-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--color-border-secondary);font-size:13px;transition:background .15s}
+    .tl-row:hover{background:rgba(29,158,117,0.03)}
+    .tl-year{color:var(--color-text-secondary);min-width:52px;font-variant-numeric:tabular-nums;font-weight:500}
+    .tl-bar-wrap{flex:1;display:flex;align-items:center;gap:8px;min-width:0}
+    .tl-bar{height:6px;border-radius:3px;background:var(--color-accent);min-width:2px;transition:width .4s cubic-bezier(0.16,1,0.3,1)}
+    .tl-val{min-width:80px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .tl-event{font-size:11px;color:var(--color-text-secondary);margin-left:4px;white-space:nowrap}
+    .tl-house-val{font-size:11px;color:var(--color-text-secondary);min-width:90px;text-align:right;white-space:nowrap}
+    .badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:4px;vertical-align:middle}
+    .badge-9{background:rgba(29,158,117,0.15);color:#1D9E75}
+    .badge-12{background:rgba(83,74,183,0.15);color:#534AB7}
+    .badge-15{background:rgba(186,117,23,0.15);color:#BA7517}
+    .note{font-size:11px;color:var(--color-text-secondary);line-height:1.6;margin-top:16px;padding:12px 14px;background:var(--color-background-secondary);border:1px solid var(--color-border-secondary);border-radius:10px}
+
+    @media(max-width:768px){
+      .chart-area{height:260px}
+      .house-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+      .house-card{padding:10px 12px}
+      .hc-price{font-size:13px}
+      .metrics{grid-template-columns:repeat(2,1fr);gap:8px}
+      .mc-val{font-size:16px}
+      .legend-row{gap:10px;font-size:11px}
+      .tl-row{flex-wrap:wrap;gap:6px}
+      .tl-bar-wrap{flex-basis:100%;order:3}
+      .tl-house-val{min-width:auto;text-align:left;order:2;font-size:10px}
+      .controls{gap:8px}
+    }
+    @media(max-width:480px){
+      .house-grid{grid-template-columns:1fr}
+      .metrics{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="index.html" class="topnav-logo"><i class="fa-solid fa-leaf"></i> <span style="color:#1D9E75">Flint</span></a>
+    <div class="topnav-links">
+      <a href="investment_allocation_charts.html"><i class="fa-solid fa-chart-pie"></i> <span class="nav-label">Allocation</span></a>
+      <a href="investment_types_explorer.html"><i class="fa-solid fa-compass"></i> <span class="nav-label">Explorer</span></a>
+      <a href="market_trends.html"><i class="fa-solid fa-chart-line"></i> <span class="nav-label">Trends</span></a>
+      <a href="india_investment_house_timeline.html" class="active"><i class="fa-solid fa-house-chimney"></i> <span class="nav-label">Timeline</span></a>
+    </div>
+    <button class="hamburger" onclick="document.getElementById('mobile-nav').classList.add('open')"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+  <div class="mobile-nav-overlay" id="mobile-nav">
+    <button class="mobile-nav-close" onclick="document.getElementById('mobile-nav').classList.remove('open')"><i class="fa-solid fa-xmark"></i></button>
+    <a href="investment_allocation_charts.html"><i class="fa-solid fa-chart-pie"></i> Allocation</a>
+    <a href="investment_types_explorer.html"><i class="fa-solid fa-compass"></i> Explorer</a>
+    <a href="market_trends.html"><i class="fa-solid fa-chart-line"></i> Trends</a>
+    <a href="india_investment_house_timeline.html" class="active"><i class="fa-solid fa-house-chimney"></i> Timeline</a>
+  </div>
+  <div class="app-container">
+    <main class="main-content">
+      <div class="container">
+        <div class="dashboard-section">
+          <h2 class="section-head">Investment vs. House Price Timeline</h2>
+          <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:20px;line-height:1.6">See how long it takes for your investment portfolio to match the price of a house in India at different return rates.</p>
+
+          <div class="wrap">
+            <div class="controls">
+              <div class="ctrl-group">
+                <div class="ctrl-label">Initial investment</div>
+                <select id="lump" class="tl-select">
+                  <option value="20000" selected>₹20,000</option>
+                  <option value="50000">₹50,000</option>
+                  <option value="100000">₹1,00,000</option>
+                </select>
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-label">Monthly SIP</div>
+                <select id="sip" class="tl-select">
+                  <option value="500" selected>₹500/mo</option>
+                  <option value="1000">₹1,000/mo</option>
+                  <option value="2000">₹2,000/mo</option>
+                  <option value="5000">₹5,000/mo</option>
+                </select>
+              </div>
+              <div class="ctrl-group">
+                <div class="ctrl-label">House price inflation</div>
+                <select id="hinfl" class="tl-select">
+                  <option value="0.06" selected>6% per year</option>
+                  <option value="0.04">4% per year</option>
+                  <option value="0.08">8% per year</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="house-grid" id="house-grid"></div>
+
+            <div class="legend-row">
+              <div class="leg-item"><div class="leg-sq" style="background:#1D9E75;width:18px"></div> 9% (conservative)</div>
+              <div class="leg-item"><div class="leg-sq" style="background:#534AB7;width:18px"></div> 12% (moderate)</div>
+              <div class="leg-item"><div class="leg-sq" style="background:#BA7517;width:18px"></div> 15% (optimistic)</div>
+              <div class="leg-item"><div class="leg-sq" style="background:#D85A30;width:18px;border-top:2px dashed #D85A30;height:0"></div> house price</div>
+            </div>
+
+            <div class="chart-area">
+              <canvas id="mainChart" role="img" aria-label="Line chart showing investment portfolio growth over 40 years vs house price targets"></canvas>
+            </div>
+
+            <div class="metrics" id="metrics"></div>
+
+            <div class="timeline-section">
+              <div class="tl-title" id="tl-title">Year-by-year — selected house</div>
+              <div id="timeline"></div>
+            </div>
+
+            <div class="note">Lump sum ₹20,000 + SIP ₹500/month. Returns are CAGR — actual markets are volatile. LTCG tax (12.5% above ₹1.25L/yr) not deducted. House prices start at today's base and inflate annually. This is illustrative, not financial advice.</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+  const HOUSES = [
+    {id:'apt_chennai', label:'Apartment – Chennai', base:6500000, range:'₹50–80L'},
+    {id:'house_chennai', label:'Independent house – Chennai', base:11500000, range:'₹80L–1.5Cr'},
+    {id:'apt_metro', label:'Apartment – Metro', base:15000000, range:'₹1–2Cr'},
+    {id:'luxury', label:'Luxury home', base:25000000, range:'₹2Cr+'},
+  ];
+  const RATES = [0.09, 0.12, 0.15];
+  const RATE_COLORS = ['#1D9E75','#534AB7','#BA7517'];
+  const RATE_LABELS = ['9%','12%','15%'];
+  const YEARS = 40;
+
+  let activeHouse = 0;
+  let chart = null;
+
+  function fmt(n){return '₹'+Math.round(n).toLocaleString('en-IN')}
+  function fmtCr(n){
+    if(n>=10000000) return '₹'+(n/10000000).toFixed(2)+'Cr';
+    if(n>=100000) return '₹'+(n/100000).toFixed(1)+'L';
+    return '₹'+Math.round(n).toLocaleString('en-IN');
+  }
+
+  function calcPortfolio(lump, sip, rate, years){
+    const monthly = rate/12;
+    const vals = [lump];
+    let v = lump;
+    for(let m=1;m<=years*12;m++){
+      v = v*(1+monthly)+sip;
+      if(m%12===0) vals.push(v);
+    }
+    return vals;
+  }
+
+  function crossYear(portfolio, houseVals){
+    for(let i=0;i<portfolio.length;i++){
+      if(portfolio[i]>=houseVals[i]) return i;
+    }
+    return null;
+  }
+
+  function getHouseVals(base, hinfl, years){
+    const vals = [base];
+    for(let y=1;y<=years;y++) vals.push(base*Math.pow(1+hinfl,y));
+    return vals;
+  }
+
+  function render(){
+    const lump = parseInt(document.getElementById('lump').value);
+    const sip = parseInt(document.getElementById('sip').value);
+    const hinfl = parseFloat(document.getElementById('hinfl').value);
+    const h = HOUSES[activeHouse];
+    const houseVals = getHouseVals(h.base, hinfl, YEARS);
+
+    const portfolios = RATES.map(r=>calcPortfolio(lump,sip,r,YEARS));
+    const labels = Array.from({length:YEARS+1},(_,i)=>i===0?'Now':`Yr ${i}`);
+
+    const crossYears = portfolios.map(p=>crossYear(p,houseVals));
+
+    updateHouseCards(portfolios, houseVals, hinfl, lump, sip);
+    updateMetrics(portfolios, houseVals, crossYears, lump, sip);
+    updateChart(labels, portfolios, houseVals);
+    updateTimeline(portfolios, houseVals, crossYears, lump, sip);
+  }
+
+  function updateHouseCards(portfolios, houseVals0, hinfl, lump, sip){
+    const grid = document.getElementById('house-grid');
+    grid.innerHTML = HOUSES.map((h,i)=>{
+      const hv = getHouseVals(h.base, hinfl, YEARS);
+      const crosses = RATES.map(r=>{
+        const p = calcPortfolio(lump,sip,r,YEARS);
+        return crossYear(p,hv);
+      });
+      const best = crosses.filter(x=>x!==null);
+      const bestYr = best.length?Math.min(...best):null;
+      const crossTxt = bestYr!==null?`Earliest: Yr ${bestYr} @ ${RATE_LABELS[crosses.indexOf(bestYr)]}`:'Not reached in 40y';
+      const colorClass = i===activeHouse?'active':'';
+      return `<div class="house-card ${colorClass}" onclick="selectHouse(${i})">
+        <div class="hc-label">${h.range}</div>
+        <div class="hc-price">${h.label.split('–')[0]}</div>
+        <div class="hc-cross" style="color:${bestYr!==null?'#1D9E75':'#E24B4A'}">${crossTxt}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function updateMetrics(portfolios, houseVals, crossYears, lump, sip){
+    const div = document.getElementById('metrics');
+    const totalInvested = yr => lump + sip*12*yr;
+    const p12 = portfolios[1];
+    const yr10val = fmtCr(p12[10]);
+    const yr20val = fmtCr(p12[20]);
+    const yr30val = fmtCr(p12[30]);
+    const houseNow = fmtCr(houseVals[0]);
+    div.innerHTML = `
+      <div class="mc"><div class="mc-label">House price today</div><div class="mc-val">${houseNow}</div><div class="mc-sub">inflates annually</div></div>
+      <div class="mc"><div class="mc-label">Portfolio @ 12% – Yr 10</div><div class="mc-val">${yr10val}</div><div class="mc-sub">invested ${fmtCr(totalInvested(10))}</div></div>
+      <div class="mc"><div class="mc-label">Portfolio @ 12% – Yr 20</div><div class="mc-val">${yr20val}</div><div class="mc-sub">invested ${fmtCr(totalInvested(20))}</div></div>
+      <div class="mc"><div class="mc-label">Portfolio @ 12% – Yr 30</div><div class="mc-val">${yr30val}</div><div class="mc-sub">invested ${fmtCr(totalInvested(30))}</div></div>`;
+  }
+
+  function updateChart(labels, portfolios, houseVals){
+    const ctx = document.getElementById('mainChart');
+    if(chart) chart.destroy();
+    const datasets = portfolios.map((p,i)=>({
+      label: RATE_LABELS[i]+' return',
+      data: p,
+      borderColor: RATE_COLORS[i],
+      borderWidth: 2,
+      pointRadius: 0,
+      fill: false,
+      tension: 0.35,
+      borderDash: [],
+    }));
+    datasets.push({
+      label:'House price',
+      data: houseVals,
+      borderColor:'#D85A30',
+      borderWidth: 1.5,
+      borderDash:[6,4],
+      pointRadius:0,
+      fill:false,
+      tension:0.1,
+    });
+    chart = new Chart(ctx,{
+      type:'line',
+      data:{labels,datasets},
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        interaction:{mode:'index',intersect:false},
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            backgroundColor:'#0a0a0a',borderColor:'#333',borderWidth:1,
+            titleColor:'#888',bodyColor:'#fff',
+            titleFont:{size:11,family:"'Space Mono', monospace"},
+            bodyFont:{size:11,family:"'Space Mono', monospace"},
+            padding:10,
+            cornerRadius:8,
+            callbacks:{label:ctx=>` ${ctx.dataset.label}: ${fmtCr(ctx.raw)}`}
+          }
+        },
+        scales:{
+          x:{ticks:{color:'#555',font:{size:10,family:"'Space Mono', monospace"},maxTicksLimit:10,autoSkip:true},grid:{color:'rgba(255,255,255,0.04)'}},
+          y:{ticks:{color:'#555',font:{size:10,family:"'Space Mono', monospace"},callback:v=>fmtCr(v),maxTicksLimit:6},grid:{color:'rgba(255,255,255,0.04)'}}
+        }
+      }
+    });
+  }
+
+  function updateTimeline(portfolios, houseVals, crossYears, lump, sip){
+    const div = document.getElementById('timeline');
+    const h = HOUSES[activeHouse];
+    document.getElementById('tl-title').textContent = `Year-by-year — ${h.label}`;
+
+    const maxVal = Math.max(...portfolios.map(p=>p[YEARS]), houseVals[YEARS]);
+    let rows = '';
+    const milestones = [1,2,3,5,7,10,12,15,18,20,22,25,28,30,35,40];
+    for(const yr of milestones){
+      const hv = houseVals[yr];
+      let events = [];
+      RATES.forEach((r,i)=>{
+        if(crossYears[i]===yr) events.push(`<span class="badge badge-${Math.round(r*100)}">${RATE_LABELS[i]} crosses house price!</span>`);
+      });
+      const p12 = portfolios[1][yr];
+      const barW = Math.round((p12/maxVal)*100);
+      const totalIn = lump+sip*12*yr;
+      rows+=`<div class="tl-row">
+        <span class="tl-year">${yr===0?'Now':'Yr '+yr}</span>
+        <div class="tl-bar-wrap">
+          <div class="tl-bar" style="width:${barW}%"></div>
+          <span class="tl-val">${fmtCr(p12)}</span>
+          <span class="tl-event">${events.join('')}</span>
+        </div>
+        <span class="tl-house-val">house: ${fmtCr(hv)}</span>
+      </div>`;
+    }
+    div.innerHTML = rows;
+  }
+
+  window.selectHouse = function(i){
+    activeHouse=i;
+    render();
+  };
+
+  document.getElementById('lump').onchange = render;
+  document.getElementById('sip').onchange = render;
+  document.getElementById('hinfl').onchange = render;
+
+  render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flint - Allocation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="topnav">
+    <a href="index.html" class="topnav-logo"><i class="fa-solid fa-leaf"></i> <span style="color:#1D9E75">Flint</span></a>
+    <div class="topnav-links">
+      <a href="investment_allocation_charts.html" class="active"><i class="fa-solid fa-chart-pie"></i> Allocation</a>
+      <a href="investment_types_explorer.html"><i class="fa-solid fa-compass"></i> Explorer</a>
+      <a href="market_trends.html"><i class="fa-solid fa-chart-line"></i> Trends</a>
+      <a href="india_investment_house_timeline.html"><i class="fa-solid fa-house-chimney"></i> Timeline</a>
+    </div>
+    <button class="hamburger" onclick="document.getElementById('mobile-nav').classList.add('open')"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+  <div class="mobile-nav-overlay" id="mobile-nav">
+    <button class="mobile-nav-close" onclick="document.getElementById('mobile-nav').classList.remove('open')"><i class="fa-solid fa-xmark"></i></button>
+    <a href="investment_allocation_charts.html" class="active"><i class="fa-solid fa-chart-pie"></i> Allocation</a>
+    <a href="investment_types_explorer.html"><i class="fa-solid fa-compass"></i> Explorer</a>
+    <a href="market_trends.html"><i class="fa-solid fa-chart-line"></i> Trends</a>
+    <a href="india_investment_house_timeline.html"><i class="fa-solid fa-house-chimney"></i> Timeline</a>
+  </div>
+  <div class="app-container">
+    <main class="main-content">
+      <div class="container">
+        <div class="dashboard-section">
+      <h2 class="section-head">Investment Allocation Charts</h2>
+      <div class="disclaimer-box" style="background: rgba(216, 90, 48, 0.1); border: 1px solid #D85A30; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+        <p style="margin: 0; color: #D85A30; font-size: 14px; font-weight: 600;">
+          <i class="fa-solid fa-triangle-exclamation"></i> Important Disclaimer:
+        </p>
+        <p style="margin: 8px 0 0; color: var(--color-text-secondary); font-size: 13px; line-height: 1.5;">
+          The information provided on this page is for educational and illustrative purposes only. It <strong>does not constitute financial, investment, or legal advice</strong>. Market investments involve risks, and past performance is not indicative of future results. Use this information at your own risk. Always consult with a qualified financial advisor before making any investment decisions.
+        </p>
+      </div>
+<style>
+  .section-label{font-size:12px;font-weight:700;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin:0 0 12px}
+  .tab-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .tab{padding:5px 13px;border-radius:20px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);font-size:14px;font-family:var(--font-tabs);cursor:pointer;transition:all .15s}
+  .tab.on{background:#534AB7;border-color:#534AB7;color:#fff}
+  .inv-tab.on{background:#0F6E56;border-color:#0F6E56;color:#fff}
+  .chart-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .pie-box{background:var(--color-background-secondary);border-radius:12px;padding:14px 16px}
+  .pie-title{font-size:14px;font-weight:700;color:var(--color-text-primary);margin-bottom:4px}
+  .pie-sub{font-size:11px;color:var(--color-text-tertiary);margin-bottom:10px}
+  .legend{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+  .leg-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--color-text-secondary)}
+  .leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+  .divider{border:none;border-top:1px solid var(--color-border-tertiary);margin:24px 0}
+  .note{font-size:11px;color:var(--color-text-tertiary);line-height:1.6;margin-top:4px}
+  @media(max-width:768px){.chart-wrap{grid-template-columns:1fr}}
+</style>
+
+<div class="section-label">By age / life stage</div>
+<div class="tab-row" id="age-tabs"></div>
+<div class="chart-wrap" id="age-charts"></div>
+<p class="note">Allocations follow broad financial planning consensus (glide-path theory). They assume a diversified, moderate-risk investor and are illustrative — not personal financial advice.</p>
+
+<hr class="divider">
+
+<div class="section-label">Famous investors</div>
+<div class="tab-row" id="inv-tabs"></div>
+<div class="chart-wrap" id="inv-charts"></div>
+<p class="note">Investor allocations are approximate, based on publicly reported holdings and stated philosophies. Past portfolios reflect historical positions and differ from current ones.</p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const PALETTE=['#534AB7','#1D9E75','#D85A30','#378ADD','#BA7517','#D4537E','#639922','#888780','#E24B4A','#0F6E56'];
+const ages=[
+  {label:'18',sub:'Just starting out',slices:[{label:'Equities (index funds)',val:85},{label:'Bonds',val:2},{label:'Cash',val:8},{label:'Real assets',val:5}]},
+  {label:'25',sub:'Early career',slices:[{label:'Equities (index funds)',val:80},{label:'Bonds',val:5},{label:'Cash',val:10},{label:'Real assets',val:5}]},
+  {label:'35',sub:'Mid-career / growing wealth',slices:[{label:'Equities',val:65},{label:'Bonds',val:15},{label:'Cash',val:8},{label:'Real assets',val:8},{label:'Alternatives',val:4}]},
+  {label:'45',sub:'Peak earning years',slices:[{label:'Equities',val:55},{label:'Bonds',val:25},{label:'Cash',val:8},{label:'Real assets',val:8},{label:'Alternatives',val:4}]},
+  {label:'55',sub:'Pre-retirement',slices:[{label:'Equities',val:45},{label:'Bonds',val:35},{label:'Cash',val:10},{label:'Real assets',val:7},{label:'Alternatives',val:3}]},
+  {label:'65',sub:'At retirement',slices:[{label:'Equities',val:35},{label:'Bonds',val:40},{label:'Cash',val:15},{label:'Real assets',val:8},{label:'Alternatives',val:2}]},
+  {label:'75+',sub:'Later retirement',slices:[{label:'Equities',val:25},{label:'Bonds',val:45},{label:'Cash',val:20},{label:'Real assets',val:8},{label:'Alternatives',val:2}]},
+];
+const investors=[
+  {name:'Warren Buffett',past:{title:'Past (1970s–90s)',sub:'Deep value, concentrated bets',slices:[{label:'US equities (value stocks)',val:80},{label:'Insurance float',val:12},{label:'Bonds',val:5},{label:'Cash',val:3}]},present:{title:'Present (~2024)',sub:'Cash-heavy, mega-cap stocks',slices:[{label:'Equities (Apple, BofA…)',val:55},{label:'Cash / T-bills',val:30},{label:'Insurance operations',val:10},{label:'Other',val:5}]}},
+  {name:'Ray Dalio',past:{title:'Past — All Weather (classic)',sub:'Risk-parity portfolio design',slices:[{label:'US equities',val:30},{label:'Long-term bonds',val:40},{label:'Medium-term bonds',val:15},{label:'Gold',val:7.5},{label:'Commodities',val:7.5}]},present:{title:'Present (~2024)',sub:'More EM, less bonds',slices:[{label:'US equities',val:25},{label:'Emerging market equities',val:18},{label:'Bonds',val:30},{label:'Gold',val:12},{label:'Commodities',val:10},{label:'Cash',val:5}]}},
+  {name:'Peter Lynch',past:{title:'Past — Magellan Fund (1977–90)',sub:'Growth at a reasonable price',slices:[{label:'Growth stocks',val:50},{label:'Cyclical stocks',val:20},{label:'Turnaround stocks',val:15},{label:'Stalwarts',val:10},{label:'Cash',val:5}]},present:{title:'Present (retired / advisory)',sub:'Simplified long-term approach',slices:[{label:'US equities (broad)',val:60},{label:'International equities',val:20},{label:'Bonds',val:12},{label:'Cash',val:8}]}},
+  {name:'Jack Bogle',past:{title:'Past — Early Vanguard (1970s–80s)',sub:'Pioneered passive indexing',slices:[{label:'US total market index',val:82},{label:'Bonds',val:15},{label:'Cash',val:3}]},present:{title:'Present (legacy model)',sub:'Simple two-fund portfolio',slices:[{label:'US total market index',val:70},{label:'Bond index',val:27},{label:'Cash',val:3}]}},
+  {name:'George Soros',past:{title:'Past — Quantum Fund (1970s–90s)',sub:'Macro bets, reflexivity theory',slices:[{label:'Macro / FX derivatives',val:40},{label:'Equities (global)',val:30},{label:'Commodities',val:15},{label:'Bonds',val:10},{label:'Cash',val:5}]},present:{title:'Present (~2024)',sub:'Political philanthropy, conservative',slices:[{label:'US equities',val:40},{label:'Bonds',val:25},{label:'Cash',val:20},{label:'Alternatives',val:10},{label:'Other',val:5}]}},
+];
+let ageCharts=[],invCharts=[];
+function makePie(canvasId,slices,colors){const ctx=document.getElementById(canvasId).getContext('2d');return new Chart(ctx,{type:'pie',data:{labels:slices.map(s=>s.label),datasets:[{data:slices.map(s=>s.val),backgroundColor:colors.slice(0,slices.length),borderWidth:2,borderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.raw+'%'}}}}});}
+function renderAgePair(idx){ageCharts.forEach(c=>c.destroy());ageCharts=[];const a=ages[idx];const colors=PALETTE;document.getElementById('age-charts').innerHTML=`<div class="pie-box"><div class="pie-title">Age ${a.label}</div><div class="pie-sub">${a.sub}</div><div style="position:relative;height:180px"><canvas id="ac1"></canvas></div><div class="legend">${a.slices.map((s,i)=>`<div class="leg-row"><span class="leg-sq" style="background:${colors[i]}"></span>${s.label} — ${s.val}%</div>`).join('')}</div></div><div class="pie-box" style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary)"><div class="pie-sub" style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;margin-top:4px">${ageRationale(a.label)}</div></div>`;ageCharts.push(makePie('ac1',a.slices,colors));}
+function ageRationale(lbl){const m={'18':'At 18, time is your biggest asset. Heavy equities (index funds) let compounding work for 40+ years. Minimal bonds — you can weather market crashes.','25':'Similar to 18, but slightly more diversified. A small real assets allocation can start building exposure to property-like returns.','35':'Wealth is growing. Begin introducing more bonds and real assets to reduce sequence-of-returns risk. Still equity-heavy.','45':'A classic "60/40 shift" begins. More bonds stabilize the portfolio as retirement moves closer. Alternatives can add uncorrelated returns.','55':'Preservation matters more. Equities still grow wealth but bonds absorb shocks. Start matching asset duration to your retirement timeline.','65':'Retirement begins. Income-generating assets (bonds, dividends) take center stage. Enough equities to hedge longevity risk — you may live 25+ more years.','75+':'Capital preservation and income dominate. High cash and bonds cover living expenses. Reduced equity exposure limits downside risk.'};return m[lbl]||'';}
+function renderInvPair(idx){invCharts.forEach(c=>c.destroy());invCharts=[];const inv=investors[idx];const colors=PALETTE;const pastSlices=inv.past.slices,presentSlices=inv.present.slices;document.getElementById('inv-charts').innerHTML=`<div class="pie-box"><div class="pie-title">${inv.past.title}</div><div class="pie-sub">${inv.past.sub}</div><div style="position:relative;height:180px"><canvas id="ic1"></canvas></div><div class="legend">${pastSlices.map((s,i)=>`<div class="leg-row"><span class="leg-sq" style="background:${colors[i]}"></span>${s.label} — ${s.val}%</div>`).join('')}</div></div><div class="pie-box"><div class="pie-title">${inv.present.title}</div><div class="pie-sub">${inv.present.sub}</div><div style="position:relative;height:180px"><canvas id="ic2"></canvas></div><div class="legend">${presentSlices.map((s,i)=>`<div class="leg-row"><span class="leg-sq" style="background:${colors[i]}"></span>${s.label} — ${s.val}%</div>`).join('')}</div></div>`;invCharts.push(makePie('ic1',pastSlices,colors));invCharts.push(makePie('ic2',presentSlices,colors));}
+const ageTabs=document.getElementById('age-tabs');ages.forEach((a,i)=>{const btn=document.createElement('button');btn.className='tab'+(i===0?' on':'');btn.textContent=a.label;btn.onclick=()=>{document.querySelectorAll('#age-tabs .tab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');renderAgePair(i);};ageTabs.appendChild(btn);});
+const invTabs=document.getElementById('inv-tabs');investors.forEach((inv,i)=>{const btn=document.createElement('button');btn.className='tab inv-tab'+(i===0?' on':'');btn.textContent=inv.name;btn.onclick=()=>{document.querySelectorAll('#inv-tabs .tab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');renderInvPair(i);};invTabs.appendChild(btn);});
+renderAgePair(0);renderInvPair(0);
+</script>
+    </div>
+    </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
